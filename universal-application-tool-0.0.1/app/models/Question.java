@@ -3,6 +3,7 @@ package models;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -175,6 +176,11 @@ public class Question extends BaseModel {
     if (questionOptions != null) {
       builder.setQuestionOptions(questionOptions);
       return;
+    }
+
+    if (legacyQuestionOptions == null) {
+        builder.setQuestionOptions(ImmutableList.of());
+        return;
     }
 
     // If the multi option question does have legacyQuestionOptions, we can assume there is only one
