@@ -180,6 +180,11 @@ export class AdminPrograms {
     await this.page.click(this.selectWithinProgramCard(programName, 'ACTIVE', ':text("Applications")'));
   }
 
+  async viewApplicationsForOldVersion(programName: string) {
+    await this.page.click(this.selectWithinProgramCard(programName, 'ACTIVE', ':text("Applications")'));
+    await this.page.click("a:has-text(\"Applications\")");
+  }
+
   selectApplicationCardForApplicant(applicantName: string) {
     return `.cf-admin-application-card:has-text("${applicantName}")`;
   }

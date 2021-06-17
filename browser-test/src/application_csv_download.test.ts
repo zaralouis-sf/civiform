@@ -17,8 +17,10 @@ describe('normal application flow', () => {
 
     const programName = 'test program for csv export';
     await adminQuestions.addNameQuestion('name-csv');
+    await adminQuestions.addDropdownQuestion('dropdown-csv', ['op1', 'op2', 'op3']);
     await adminQuestions.exportQuestion('name-csv');
-    await adminPrograms.addAndPublishProgramWithQuestions(['name-csv'], programName);
+    await adminQuestions.exportQuestion('dropdown-csv');
+    await adminPrograms.addAndPublishProgramWithQuestions(['name-csv', 'dropdown-csv'], programName);
 
     await logout(page);
     await loginAsTestUser(page);
@@ -28,6 +30,7 @@ describe('normal application flow', () => {
 
     // Applicant fills out first application block.
     await applicantQuestions.answerNameQuestion('sarah', 'smith');
+    await applicantQuestions.answerDropdownQuestion('op2');
     await applicantQuestions.clickNext();
 
     // Application submits answers from review page.
@@ -38,10 +41,18 @@ describe('normal application flow', () => {
 
     await adminPrograms.viewApplications(programName);
     const csvContent = await adminPrograms.getCsv();
-    expect(csvContent).toContain('sarah,,smith');
+    expect(csvContent).toContain('sarah,,smith,op2');
 
     await logout(page);
     await loginAsAdmin(page)
+
+    await adminQuestions.gotoQuestionEditPage('dropdown-csv');
+    await page.click('button:text("Remove"):visible')
+    await page.click('text=Create');
+    await adminPrograms.publishProgram(programName);
+
+    const postEditCsvContent = await adminPrograms.getCsv();
+    expect(postEditCsvContent).toContain('sarah,,smith,op2');
 
     await adminPrograms.gotoAdminProgramsPage();
     const demographicsCsvContent = await adminPrograms.getDemographicsCsv();
