@@ -189,6 +189,27 @@ class ValidationController {
     }
   }
 
+  /** if we have empty inputs then disable the add input button. (We don't need two blank inputs.) */
+  maybeHideEnumeratorAddButton(): boolean {
+    let hasEmptyInputs = false;
+    const enumeratorQuestion =
+      document.querySelector(ValidationController.ENUMERATOR_QUESTION_CLASS);
+    if (enumeratorQuestion) {
+      const enumeratorInputValues = Array.from(enumeratorQuestion.querySelectorAll('input'))
+        .filter(item => item.id !== ValidationController.ENUMERATOR_DELETE_TEMPLATE)
+        .map(item => item.value);
+
+      // validate that there are no empty inputs.
+      hasEmptyInputs = enumeratorInputValues.includes("");
+      const addButton =
+        <HTMLInputElement>document.getElementById('enumerator-field-add-button');
+      if (addButton) {
+        addButton.disabled = hasEmptyInputs;
+      }
+    }
+    return hasEmptyInputs;
+  }
+
   /** Validates all address questions. */
   validateAddressQuestion(): boolean {
     let isValid = true;
@@ -224,26 +245,29 @@ class ValidationController {
     }
     return isValid;
   }
-
-  /** if we have empty inputs then disable the add input button. (We don't need two blank inputs.) */
-  maybeHideEnumeratorAddButton(): boolean {
-    let hasEmptyInputs = false;
-    const enumeratorQuestion =
-      document.querySelector(ValidationController.ENUMERATOR_QUESTION_CLASS);
-    if (enumeratorQuestion) {
-      const enumeratorInputValues = Array.from(enumeratorQuestion.querySelectorAll('input'))
-        .filter(item => item.id !== ValidationController.ENUMERATOR_DELETE_TEMPLATE)
-        .map(item => item.value);
-
-      // validate that there are no empty inputs.
-      hasEmptyInputs = enumeratorInputValues.includes("");
-      const addButton =
-        <HTMLInputElement>document.getElementById('enumerator-field-add-button');
-      if (addButton) {
-        addButton.disabled = hasEmptyInputs;
-      }
+  
+  /** Validates all checkbox questions. */
+  validateCheckboxQuestion(): boolean {
+    let isValid = true;
+    const checkboxQuestions = Array.from(document.querySelectorAll(ValidationController.CHECKBOX_QUESTION_CLASS));
+    for (const question of checkboxQuestions) {
     }
-    return hasEmptyInputs;
+    return isValid;
+  }
+
+  /** Validates all date questions. */
+  validateDateQuestion(): boolean {
+    return true;
+  }
+  
+  /** Validates all dropdown questions. */
+  validateDropdownQuestion(): boolean {
+    return true;  
+  }
+
+  /** Validates all email questions. */
+  validateEmailQuestion() : boolean {
+    return true;
   }
 
   /** Validates that there are no empty or indentical items in the list. */
@@ -308,6 +332,22 @@ class ValidationController {
     }
     return isValid;
   }
+
+  /** Validates all number questions. */
+  validateNumberQuestion(): boolean {
+    return true;
+  }
+
+  /** Validates all radio questions. */
+  validateRadioButtonQuestion(): boolean {
+    return true;
+  }
+
+  /** Validates all text questions. */
+  validateTextQuestion(): boolean {
+    return true;
+  }
+}
 }
 
 window.addEventListener('pageshow', () => {
