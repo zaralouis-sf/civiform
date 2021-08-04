@@ -21,6 +21,7 @@ describe('normal application flow', () => {
     await adminQuestions.addNumberQuestion('number-q');
     await adminQuestions.addTextQuestion('text-q');
     await adminQuestions.addRadioButtonQuestion('radio-q', ['one', 'two', 'three']);
+    await adminQuestions.addStaticQuestion('static-q');
 
     const programName = 'a shiny new program';
     await adminPrograms.addProgram(programName);
@@ -28,6 +29,7 @@ describe('normal application flow', () => {
     await adminPrograms.addProgramBlock(programName, 'another description', ['ice-cream-q', 'favorite-trees-q', 'number-q', 'text-q']);
     await adminPrograms.addProgramBlock(programName, 'third description', ['fileupload-q']);
     await adminPrograms.addProgramBlock(programName, 'fourth description', ['scared-of-q', 'favorite-rats-q']);
+    await adminPrograms.addProgramBlock(programName, 'fifth description', ['static-q']);
 
     await adminPrograms.gotoAdminProgramsPage();
     await adminPrograms.expectDraftProgram(programName);
@@ -46,6 +48,7 @@ describe('normal application flow', () => {
     await adminQuestions.expectActiveQuestionExist('text-q');
     await adminQuestions.expectActiveQuestionExist('radio-q');
     await adminQuestions.expectActiveQuestionExist('email-q');
+    await adminQuestions.expectActiveQuestionExist('static-q');
 
     await logout(page);
     await loginAsTestUser(page);
@@ -94,6 +97,10 @@ describe('normal application flow', () => {
     await applicantQuestions.answerCheckboxQuestion(['clowns']);
     await applicantQuestions.answerCheckboxQuestion(['sewage']);
     await applicantQuestions.clickNext();
+
+    // verify we can see static question on 5th block.
+   await applicantQuestions.seeStaticQuestion('static question text');
+   await applicantQuestions.clickNext();
 
     // submit
     await applicantQuestions.submitFromReviewPage(programName);

@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import services.Path;
 import services.applicant.question.ApplicantQuestion;
 import services.applicant.question.PresentsErrors;
+import services.applicant.question.StaticContentQuestion;
 import services.program.BlockDefinition;
 import services.program.predicate.PredicateDefinition;
 import services.question.types.ScalarType;
@@ -134,6 +135,12 @@ public final class Block {
       path = path.withoutArrayReference();
     }
     return Optional.ofNullable(getContextualizedScalars().get(path));
+  }
+
+  public boolean isStaticQuestionBlock(){
+    return getQuestions().stream()
+            .map(ApplicantQuestion::errorsPresenter)
+            .allMatch(presentsErrors -> presentsErrors instanceof StaticContentQuestion);
   }
 
   /**
