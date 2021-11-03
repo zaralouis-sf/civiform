@@ -1,4 +1,4 @@
-import {AdminPrograms, AdminQuestions, ApplicantQuestions, loginAsAdmin, loginAsGuest, logout, selectApplicantLanguage, startSession, resetSession} from './support'
+import {AdminPrograms, AdminQuestions, ApplicantQuestions, loginAsAdmin, loginAsGuest, logout, resetSession, selectApplicantLanguage, startSession} from './support'
 
 describe('currency applicant flow', () => {
   const validCurrency = "1000";
@@ -88,34 +88,50 @@ describe('currency applicant flow', () => {
       await applicantQuestions.submitFromReviewPage(programName);
     });
 
-    it('with first invalid does not submit', async () => {
-      await loginAsGuest(pageObject);
-      await selectApplicantLanguage(pageObject, 'English');
+    describe('with first invalid', () => {
+      beforeEach(async () => {
+        await loginAsGuest(pageObject);
+        await selectApplicantLanguage(pageObject, 'English');
 
-      await applicantQuestions.applyProgram(programName);
-      const error = await pageObject.$('.cf-currency-value-error >> nth=0');
-      expect(await error.isHidden()).toEqual(true);
+        await applicantQuestions.applyProgram(programName);
 
-      await applicantQuestions.answerCurrencyQuestion(invalidCurrency, 0);
-      await applicantQuestions.answerCurrencyQuestion(validCurrency, 1);
-      await applicantQuestions.clickNext();
+        await applicantQuestions.answerCurrencyQuestion(invalidCurrency, 0);
+        await applicantQuestions.answerCurrencyQuestion(validCurrency, 1);
+        await applicantQuestions.clickNext();
+      });
 
-      expect(await error.isHidden()).toEqual(false);
+      it('does not submit', async () => {
+        const error = await pageObject.$('.cf-currency-value-error >> nth=0');
+        expect(await error.isHidden()).toEqual(false);
+      });
+
+      it('does not show error on second question', async () => {
+        const error = await pageObject.$('.cf-currency-value-error >> nth=1');
+        expect(await error.isHidden()).toEqual(true);
+      });
     });
 
-    it('with second invalid does not submit', async () => {
-      await loginAsGuest(pageObject);
-      await selectApplicantLanguage(pageObject, 'English');
+    describe('with second invalid', () => {
+      beforeEach(async () => {
+        await loginAsGuest(pageObject);
+        await selectApplicantLanguage(pageObject, 'English');
 
-      await applicantQuestions.applyProgram(programName);
-      const error = await pageObject.$('.cf-currency-value-error >> nth=1');
-      expect(await error.isHidden()).toEqual(true);
+        await applicantQuestions.applyProgram(programName);
 
-      await applicantQuestions.answerCurrencyQuestion(validCurrency, 0);
-      await applicantQuestions.answerCurrencyQuestion(invalidCurrency, 1);
-      await applicantQuestions.clickNext();
+        await applicantQuestions.answerCurrencyQuestion(validCurrency, 0);
+        await applicantQuestions.answerCurrencyQuestion(invalidCurrency, 1);
+        await applicantQuestions.clickNext();
+      });
 
-      expect(await error.isHidden()).toEqual(false);
+      it('does not submit', async () => {
+        const error = await pageObject.$('.cf-currency-value-error >> nth=1');
+        expect(await error.isHidden()).toEqual(false);
+      });
+
+      it('does not show error on first question', async () => {
+        const error = await pageObject.$('.cf-currency-value-error >> nth=0');
+        expect(await error.isHidden()).toEqual(true);
+      });
     });
   });
 })
